@@ -10,17 +10,24 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final scrollContoller = ScrollController();
+  Services services = Services();
+  List<Product> products = [];
   late Future _data;
+  var limit = 15;
   @override
   void initState() {
     // TODO: implement initState
+    scrollContoller.addListener(_scroll);
     fetch();
     super.initState();
   }
 
   fetch() {
-    _data = Services.getProducts();
-    setState(() {});
+    _data = services.getProducts(limit);
+    setState(() {
+      _data = services.getProducts(limit);
+    });
   }
 
   @override
@@ -29,12 +36,41 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(title: const Text('Product')),
       body: Column(
         children: [
+          // Expanded(
+          //   child: ListView.builder(
+          //     itemBuilder: (context, index) {
+          //       if (index < data.length) {
+          //         //Product product = data[index];
+          //         return Card(
+          //           child: ListTile(
+          //             title: Text(data[index]),
+          //           ),
+          //           // child: ListTile(
+          //           //   title: Text(product.title),
+          //           //   leading: Image.network(product.images[0]),
+          //           //   subtitle: Text(product.price.toString()),
+          //           //   trailing: Text(product.discountPercentage.toString()),
+          //           // ),
+          //         );
+          //       } else {
+          //         return const Padding(
+          //           padding: EdgeInsets.symmetric(vertical: 20),
+          //           child: Center(
+          //             child: CircularProgressIndicator(),
+          //           ),
+          //         );
+          //       }
+          //     },
+          //     itemCount: data.length,
+          //   ),
+          // )
           FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                List<Product> products = snapshot.data;
+                products = snapshot.data;
                 return Expanded(
                   child: ListView.builder(
+                    controller: scrollContoller,
                     itemBuilder: (context, index) {
                       if (index < products.length) {
                         Product product = products[index];
@@ -44,7 +80,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             leading: Image.network(product.images[0]),
                             subtitle: Text(product.price.toString()),
                             trailing:
-                                Text(product.discountPercentage.toString()),
+                                Text('Disc : ${product.discountPercentage}%'),
                           ),
                         );
                       } else {
@@ -56,7 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         );
                       }
                     },
-                    itemCount: products.length,
+                    itemCount: products.length + 1,
                   ),
                 );
               } else {
@@ -68,5 +104,16 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
       ),
     );
+  }
+
+  void _scroll() {
+    if (scrollContoller.position.pixels ==
+        scrollContoller.position.maxScrollExtent) {
+      limit += 5;
+      print('scroll');
+      fetch();
+    } else {
+      print('Dont Call');
+    }
   }
 }

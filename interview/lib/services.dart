@@ -3,11 +3,10 @@ import 'package:dio/dio.dart';
 import 'Products.dart';
 
 class Services {
-  static Future<List<Product>> getProducts() async {
-    var limit = 10;
+  Future<List<Product>> getProducts(int limit) async {
     try {
-      final response = await Dio()
-          .get('https://dummyjson.com/products?limit=$limit&skip=10');
+      final response =
+          await Dio().get('https://dummyjson.com/products?limit=$limit');
       if (response.statusCode == 200) {
         final data = response.data;
         final products = List<Product>.from(
