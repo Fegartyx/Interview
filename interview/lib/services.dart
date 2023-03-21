@@ -6,8 +6,8 @@ class Services {
   static Future<List<Product>> getProducts() async {
     var limit = 10;
     try {
-      final response =
-          await Dio().get('https://dummyjson.com/products?$limit&skip=10');
+      final response = await Dio()
+          .get('https://dummyjson.com/products?limit=$limit&skip=10');
       if (response.statusCode == 200) {
         final data = response.data;
         final products = List<Product>.from(
